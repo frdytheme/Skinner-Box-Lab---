@@ -2,8 +2,14 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Skinner Box Lab – 도파민 원형 레벨 시스템</title>
 <style>
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent; /* 터치 시 파란 하이라이트 제거 */
+  }
+
   body {
     font-family: Pretendard, sans-serif;
     margin: 0;
@@ -13,27 +19,42 @@
     align-items: center;
     justify-content: center;
     height: 100vh;
+    padding: 20px;
+    text-align: center;
   }
-  h1 { margin-bottom: 8px; text-align: center; }
-  p { text-align: center; color: #555; margin-bottom: 20px; }
+
+  h1 {
+    margin-bottom: 8px;
+    font-size: clamp(20px, 4vw, 28px);
+  }
+
+  p {
+    color: #555;
+    margin-bottom: 20px;
+    font-size: clamp(14px, 3vw, 16px);
+  }
 
   .circle {
-    width: 180px;
-    height: 180px;
+    width: clamp(140px, 40vw, 220px);
+    height: clamp(140px, 40vw, 220px);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 48px;
+    font-size: clamp(36px, 10vw, 64px);
     font-weight: bold;
     color: white;
     transition: background 0.3s ease;
-    margin-bottom: 24px;
+    margin-bottom: 32px;
+    touch-action: manipulation;
   }
 
   .btn-group {
     display: flex;
+    flex-direction: row;
     gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
   button {
@@ -41,11 +62,13 @@
     border-radius: 12px;
     background: #2563eb;
     color: white;
-    font-size: 18px;
+    font-size: clamp(16px, 4vw, 20px);
     font-weight: 600;
     cursor: pointer;
-    padding: 20px 32px;
+    padding: clamp(14px, 3vw, 20px) clamp(24px, 6vw, 32px);
     transition: all 0.15s ease;
+    min-width: clamp(120px, 40vw, 180px);
+    touch-action: manipulation;
   }
 
   button:active {
@@ -60,13 +83,13 @@
 </head>
 <body>
   <h1>🐭 Skinner Box Lab</h1>
-  <p>도파민 채워서 레벨 업!<br>예측 vs 랜덤 확률 비교 체험</p>
+  <p>도파민으로 레벨업!<br>랜덤 보상 체험</p>
 
   <div class="circle" id="circle">0</div>
 
   <div class="btn-group">
-    <button id="frBtn">A버튼</button>
-    <button id="vrBtn">B버튼</button>
+    <button id="frBtn">A버튼 (고정)</button>
+    <button id="vrBtn">B버튼 (랜덤)</button>
   </div>
 
 <script>
@@ -98,7 +121,7 @@ function gainDopamine(amount) {
   updateCircle();
 }
 
-// FR 버튼: 클릭 시 +2
+// FR: 클릭 시 +2
 function pressFR() {
   const btn = document.getElementById("frBtn");
   btn.style.background = "#1e40af";
@@ -106,7 +129,7 @@ function pressFR() {
   gainDopamine(2);
 }
 
-// VR 버튼: 10% 확률로 50~100 도파민 급상승
+// VR: 10% 확률로 50~100 도파민 급상승
 function pressVR() {
   const btn = document.getElementById("vrBtn");
   btn.style.background = "#1e3a8a";
@@ -117,7 +140,6 @@ function pressVR() {
     const reward = 50 + Math.floor(Math.random() * 51);
     gainDopamine(reward);
 
-    // 보상 성공 시 반짝 효과
     btn.classList.add("flash");
     setTimeout(() => btn.classList.remove("flash"), 300);
   }
