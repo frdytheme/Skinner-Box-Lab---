@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Skinner Box Lab – 도파민 원형 레벨 시스템</title>
+<style>
+  body {
+    font-family: Pretendard, sans-serif;
+    margin: 0;
+    background: #f9fafb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+  h1 { margin-bottom: 8px; text-align: center; }
+  p { text-align: center; color: #555; margin-bottom: 20px; }
+
+  .circle {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    font-weight: bold;
+    color: white;
+    transition: background 0.3s ease;
+    margin-bottom: 24px;
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 16px;
+  }
+
+  button {
+    border: none;
+    border-radius: 12px;
+    background: #2563eb;
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 20px 32px;
+    transition: all 0.15s ease;
+  }
+
+  button:active {
+    transform: scale(0.95);
+    background: #1d4ed8;
+  }
+
+  .flash {
+    box-shadow: 0 0 20px 8px gold;
+  }
+</style>
+</head>
+<body>
+  <h1>🐭 Skinner Box Lab</h1>
+  <p>도파민 채워서 레벨 업!<br>예측 vs 랜덤 확률 비교 체험</p>
+
+  <div class="circle" id="circle">0</div>
+
+  <div class="btn-group">
+    <button id="frBtn">A버튼</button>
+    <button id="vrBtn">B버튼</button>
+  </div>
+
+<script>
+let dopamine = 0;
+let level = 0;
+let levelThreshold = 100;
+let currentColor = "#60a5fa"; // 초기 색상
+
+function randomColor() {
+  const hue = Math.floor(Math.random() * 360);
+  return `hsl(${hue}, 80%, 60%)`;
+}
+
+function updateCircle() {
+  const fill = Math.min(100, (dopamine / levelThreshold) * 100);
+  const circle = document.getElementById("circle");
+  circle.textContent = level;
+  circle.style.background = `conic-gradient(${currentColor} ${fill}%, #e5e7eb ${fill}%)`;
+}
+
+function gainDopamine(amount) {
+  dopamine += amount;
+  if (dopamine >= levelThreshold) {
+    dopamine -= levelThreshold;
+    level++;
+    levelThreshold = 100 * (1 + level * 0.25);
+    currentColor = randomColor();
+  }
+  updateCircle();
+}
+
+// FR 버튼: 클릭 시 +2
+function pressFR() {
+  const btn = document.getElementById("frBtn");
+  btn.style.background = "#1e40af";
+  setTimeout(() => btn.style.background = "#2563eb", 150);
+  gainDopamine(2);
+}
+
+// VR 버튼: 10% 확률로 50~100 도파민 급상승
+function pressVR() {
+  const btn = document.getElementById("vrBtn");
+  btn.style.background = "#1e3a8a";
+  setTimeout(() => btn.style.background = "#2563eb", 150);
+
+  const chance = Math.random();
+  if (chance < 0.1) {
+    const reward = 50 + Math.floor(Math.random() * 51);
+    gainDopamine(reward);
+
+    // 보상 성공 시 반짝 효과
+    btn.classList.add("flash");
+    setTimeout(() => btn.classList.remove("flash"), 300);
+  }
+}
+
+document.getElementById("frBtn").onclick = pressFR;
+document.getElementById("vrBtn").onclick = pressVR;
+
+updateCircle();
+</script>
+</body>
+</html>
